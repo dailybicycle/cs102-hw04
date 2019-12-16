@@ -1,0 +1,96 @@
+import random
+import sys
+import os
+from PIL import Image, ImageDraw, ImageFont
+import textwrap
+
+input_path = input("Please specify the path of your file: ")
+# https://stackoverflow.com/questions/22939211/what-is-the-proper-way-to-take-a-directory-path-as-user-input
+
+assert os.path.exists(input_path), "I did not find the file at " + str(input_path)
+file = input_path
+print("File found.\n")
+
+placard = input("Type your placard: ")
+if placard == "":
+    placard = "RESIST" or "EMPATHY" or "QUESTION" or "VOTE" or "EAT THE RICH"
+
+# def wrap(text, font, max_width):
+#     phrase = []
+#     # If the width of the text is smaller than image width
+#     # no need to split it, just add it to the lines array and return.
+#     if font.getsize(text)[0] <= max_width:
+#         phrase.append(text)
+#     else:
+#         # split the line by spaces to get separate words
+#         words = text.split(' ')
+#         i = 0
+#         # append every word to a line while the total width is less than image width
+#         while i < len(words):
+#             line = ''  # if there's no text, line is blank
+#             while i < len(words) and font.getsize(line + words[i])[0] <= max_width:
+#                 line = line + words[i] + " "  # adds new words to each line and a space at the end
+#                 i += 1
+#             if not line:
+#                 line = words[i]
+#                 i += 1
+#             # when the line gets longer than the max width stop appending the word,
+#             # and add it to a new line in the lines array
+#             phrase.append(line)
+#     return phrase
+#     # draw the message on the background
+
+
+# initialize the drawing context with
+# the image object as background
+
+img = Image.open(input_path)
+draw = ImageDraw.Draw(img)
+W, H = img.size  # tuple of image dimensions; essential that width is before height for 'wrap'.
+
+# create font object with the font file and specify
+# desired size
+size_font = int(H / 4)  # maintains the proportion of text relative to image size
+color = 'rgb(255, 255, 255)'  # white color
+placard_font = ImageFont.truetype('HelveticaNeue.ttc', size=size_font, index=1)  # index here indicates
+# the style within the TrueType collection file sequence.
+placard_spacing = H - (size_font*3)
+# fit lines to image
+block = textwrap.wrap(placard, width=W)
+
+w, h = draw.textsize(placard, font=placard_font, spacing=placard_spacing)
+# starting position of the message
+(x, y) = ((W - w) / 2, (H - h) / 2)  # centers the text on the image
+
+ImageDraw.ImageDraw.multiline_text(xy=(x, y), text=placard, fill=color, font=placard_font, align="center")
+
+# save the edited image
+
+output_path = input_path.replace('.JPG', '_RESIST.jpg')
+img.save(output_path)
+img.open(output_path)
+
+# TODO: Replace this with your own filter!
+# Median pixel filter, taken from https://note.nkmk.me/en/python-opencv-pillow-image-size
+# members = [0] * 9
+# for i in range(2, width // 2):
+#     for j in range(1, height - 1):
+#         members[0] = img.getpixel((i - 1, j - 1))
+#         members[1] = img.getpixel((i - 1, j))
+#         members[2] = img.getpixel((i - 1, j + 1))
+#         members[3] = img.getpixel((i, j - 1))
+#         members[4] = img.getpixel((i, j))
+#         members[5] = img.getpixel((i, j + 1))
+#         members[6] = img.getpixel((i + 1, j - 1))
+#         members[7] = img.getpixel((i + 1, j))
+#         members[8] = img.getpixel((i + 1, j + 1))
+#         new_img.putpixel((i, j), (random.choice(members)))
+#
+# for i in range(width // 2, width - 1):
+#     for j in range(1, height - 1):
+#         r, g, b = img.getpixel((i, j))
+#         new_img.putpixel((i, j), (0, g, b))
+#
+# output_path = output("Please specify the path of your file: ")
+#
+# new_img.save(output_path)
