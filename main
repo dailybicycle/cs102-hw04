@@ -11,9 +11,13 @@ assert os.path.exists(input_path), "I did not find the file at " + str(input_pat
 file = input_path
 print("File found.\n")
 
-placard = input("Type your placard: ")
+placard = input("Type your placard or leave blank: ")
+placard_standard = ["RESIST", "EMPATHY", "QUESTION", "VOTE", "REDISTRIBUTE WEALTH", "GIVE MORE", "WASTE LESS",
+                    "MIGHT ≠ RIGHT"]
+
 if placard == "":
-    placard = "RESIST" or "EMPATHY" or "QUESTION" or "VOTE" or "EAT THE RICH"
+    placard = random.choice(placard_standard)
+    # https://stackoverflow.com/questions/306400/how-to-randomly-select-an-item-from-a-list
 
 # def wrap(text, font, max_width):
 #     phrase = []
@@ -54,43 +58,32 @@ size_font = int(H / 4)  # maintains the proportion of text relative to image siz
 color = 'rgb(255, 255, 255)'  # white color
 placard_font = ImageFont.truetype('HelveticaNeue.ttc', size=size_font, index=1)  # index here indicates
 # the style within the TrueType collection file sequence.
-placard_spacing = H - (size_font*3)
+placard_spacing = (H - (size_font * 3)) / 2
 # fit lines to image
-block = textwrap.wrap(placard, width=W)
 
-w, h = draw.textsize(placard, font=placard_font, spacing=placard_spacing)
-# starting position of the message
-(x, y) = ((W - w) / 2, (H - h) / 2)  # centers the text on the image
+para = textwrap.wrap(placard, width=8, max_lines=3)
+print(para)
 
-ImageDraw.ImageDraw.multiline_text(xy=(x, y), text=placard, fill=color, font=placard_font, align="center")
+i = 0
+for line in para:
+    while i < len(para):
+        w, h = draw.textsize(para()[i], font=placard_font, spacing=placard_spacing)
 
-# save the edited image
+        # starting position of the message
+        (x, y) = ((W - w) / 2, (H - h) / 2)  # centers the text on the image
 
-output_path = input_path.replace('.JPG', '_RESIST.jpg')
+        draw.multiline_text(xy=(x, y), text=para()[i], fill=color, font=placard_font, align="center")
+        i += 1
+
+    # save the edited image
+if input_path.find('.jpg'):
+    output_path = input_path.replace('.jpg', '_PLACARD.JPG')
+elif input_path.find('.JPG'):
+    output_path = input_path.replace('.JPG', '_PLACARD.JPG')
+elif input_path.find('.JPEG'):
+    output_path = input_path.replace('.JPEG', '_PLACARD.JPG')
+elif input_path.find('.jpeg'):
+    output_path = input_path.replace('.jpeg', '_PLACARD.JPG')
+
 img.save(output_path)
-img.open(output_path)
-
-# TODO: Replace this with your own filter!
-# Median pixel filter, taken from https://note.nkmk.me/en/python-opencv-pillow-image-size
-# members = [0] * 9
-# for i in range(2, width // 2):
-#     for j in range(1, height - 1):
-#         members[0] = img.getpixel((i - 1, j - 1))
-#         members[1] = img.getpixel((i - 1, j))
-#         members[2] = img.getpixel((i - 1, j + 1))
-#         members[3] = img.getpixel((i, j - 1))
-#         members[4] = img.getpixel((i, j))
-#         members[5] = img.getpixel((i, j + 1))
-#         members[6] = img.getpixel((i + 1, j - 1))
-#         members[7] = img.getpixel((i + 1, j))
-#         members[8] = img.getpixel((i + 1, j + 1))
-#         new_img.putpixel((i, j), (random.choice(members)))
-#
-# for i in range(width // 2, width - 1):
-#     for j in range(1, height - 1):
-#         r, g, b = img.getpixel((i, j))
-#         new_img.putpixel((i, j), (0, g, b))
-#
-# output_path = output("Please specify the path of your file: ")
-#
-# new_img.save(output_path)
+# open(output_path)
