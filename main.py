@@ -1,74 +1,1 @@
-import random
-import sys
-import os
-import webbrowser
-from PIL import Image, ImageDraw, ImageFont
-
-# to run from terminal use python3, not simply python
-
-input_path = input("Please specify the path of your file: ")
-# https://stackoverflow.com/questions/22939211/what-is-the-proper-way-to-take-a-directory-path-as-user-input
-
-assert os.path.exists(input_path), "File not found at " + str(input_path)
-file = (input_path, 'r+')
-print("File found.\n")
-
-placard = input("Type your placard text or leave blank: ")
-placard_standard = ["RESIST", "EMPATHY", "QUESTION", "VOTE", "REDISTRIBUTE WEALTH", "GIVE MORE", "WASTE LESS",
-                    "MIGHT ≠ RIGHT"]
-if placard == "":
-    placard = random.choice(placard_standard)
-    # https://stackoverflow.com/questions/306400/how-to-randomly-select-an-item-from-a-list
-
-img = Image.open(input_path)
-draw = ImageDraw.Draw(img)
-W, H = img.size  # tuple of image dimensions.
-
-#TODO define size_font to dynamically fit text size to image size
-
-# create font object with the font file and specify desired size
-size_font = int(H / 4)  # maintains the proportion of text relative to image size
-color = 'rgb(255, 255, 255)'  # white color
-placard_font = ImageFont.truetype('HelveticaNeue.ttc', size=size_font, index=1)  # index here indicates
-line_height = placard_font.getsize('pd')[1]  # gives total line height; p & d reach extents
-# the style within the TrueType collection file sequence.
-placard_spacing = (H - (size_font * 3)) / 3
-# fit lines to image
-
-text = []
-
-# if placard_font.getsize(placard)[0] > W:
-
-if placard_font.getsize(placard)[0] < W:
-    text.append(placard)
-else:
-    # split the line by spaces to get separate words
-    words = placard.split(' ')
-    i = 0
-    # append every word to a line while the total width is less than image width
-    while i < len(words):
-        line = ''  # if there's no text, line is blank
-        while i < len(words) and placard_font.getsize(line + words[i])[0] <= W:
-            line = line + words[i] + " "  # adds new words to each line and a space at the end
-            i += 1
-        if not line:
-            line = words[i]
-            i += 1
-        # when the line gets longer than the max width stop appending the word,
-        # and add it to a new line in the lines array
-        text.append(line)
-print(text)
-y = (H - (line_height * len(text) + placard_spacing * (len(text)-1)))/2
-
-for line in text:
-    line_width = draw.textsize(line, font=placard_font)[0]
-    # starting position of the message
-    x = (W - line_width) / 2  # centers the text on the image
-    draw.multiline_text(xy=(x, y), text=line, fill=color, font=placard_font, align="center")
-    y = y + line_height  # + placard_spacing
-
-    # save the edited image
-output_path = input_path.replace('.', '_' + placard + '.')  # add text to filename
-
-img.save(output_path)
-webbrowser.open('file://' + output_path)  # https://stackoverflow.com/questions/22004498/webbrowser-open-in-python
+import randomimport numpy as npimport sysimport osimport webbrowserfrom PIL import Image, ImageDraw, ImageFont, ImageEnhance# to run from terminal use python3, not simply pythoninput_path = input("Please specify the file path of your image: ")# https://stackoverflow.com/questions/22939211/what-is-the-proper-way-to-take-a-directory-path-as-user-inputassert os.path.exists(input_path), "File not found at " + str(input_path)file = (input_path, 'r+')print("File found.\n")placard = input("Type your placard text or leave blank: ")placard_standard = ["RESIST", "EMPATHY", "QUESTION", "VOTE", "REDISTRIBUTE", "GIVE MORE", "WASTE LESS",                    "MIGHT ≠ RIGHT"]if placard == "":    placard = random.choice(placard_standard)    # https://stackoverflow.com/questions/306400/how-to-randomly-select-an-item-from-a-listgray = input("Convert image to grayscale? y/n: ")if gray == 'y' or gray == 'Y':    img = Image.open(input_path).convert('L')  # convert to grayscale. Use 'L', not 'LA', for jpg file.    # https://stackoverflow.com/questions/12201577/how-can-i-convert-an-rgb-image-into-grayscale-in-pythonelse:    img = Image.open(input_path)contrast = input("Set contrast factor (>1.0 is increased contrast) or leave blank: ")if contrast == "":    contrast = 1.0img = ImageEnhance.Contrast(img).enhance(float(contrast))  # increase constrast: factor of 1 is same contrast,# anything above that is added contrast.draw = ImageDraw.Draw(img)W, H = img.size  # tuple of image dimensions.#TODO define size_font to dynamically fit text size to image size# create font object with the font file and specify desired sizesize_font = int(H / 4)  # starting set font size. Then maintains the proportion of text relative to image size# choose text colorcolor = input("Text color, w/k?: ")if color == "k" or color == "K":    color = 'rgb(0,0,0)'  # blackelse:    color = 'rgb(255, 255, 255)'  # white  (DEFAULT)# portion of image width you want text width to be (90% of each dim)text_block = Image.new('RGB', (int(W*0.9), int(H*0.9)))placard_font = ImageFont.truetype('HelveticaNeue.ttc', size=size_font, index=1)  # index here indicates# the style within the TrueType collection file sequence.print(img.size)print(text_block.size)line_height = placard_font.getsize('pd')[1]  # gives total line height; p & d reach extentsplacard_spacing = (H - (size_font * 3)) / 3# fit lines to imagetext = []# if placard_font.getsize(placard)[0] > W:if placard_font.getsize(placard)[0] < W:    text.append(placard)else:    # split the line by spaces to get separate words    words = placard.split(' ')    i = 0    # append every word to a line while the total width is less than image width    while i < len(words):        line = ''  # if there's no text, line is blank        while i < len(words) and placard_font.getsize(line + words[i])[0] <= W:            line = line + words[i] + " "  # adds new words to each line and a space at the end            i += 1        if not line:            line = words[i]            i += 1        # when the line gets longer than the max width stop appending the word,        # and add it to a new line in the lines array        text.append(line)print(text)y = (H - (line_height * len(text) + placard_spacing * (len(text)-1)))/2for line in text:    # while draw.textsize(line, font=placard_font)[0] < text_block.size[0]:  # and (draw.textsize(line, font=placard_font)[0] < text_block.size[1]):    #     size_font -= 1    line_width = draw.textsize(line, font=placard_font)[0]    # starting position of the message    x = (W - line_width) / 2  # centers the text on the image    draw.multiline_text(xy=(x, y), text=line, fill=color, font=placard_font, align="center")    y = y + line_height  # + placard_spacing    # save the edited imageoutput_path = input_path.replace('.', '_' + placard + '.')  # add text to filenameimg.save(output_path)webbrowser.open('file://' + output_path)# https://stackoverflow.com/questions/22004498/webbrowser-open-in-python
