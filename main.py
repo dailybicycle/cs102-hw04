@@ -1,14 +1,16 @@
 import random
 import sys
 import os
+import webbrowser
 from PIL import Image, ImageDraw, ImageFont
-import textwrap
+
+# to run from terminal use python3, not simply python
 
 input_path = input("Please specify the path of your file: ")
 # https://stackoverflow.com/questions/22939211/what-is-the-proper-way-to-take-a-directory-path-as-user-input
 
-assert os.path.exists(input_path), "I did not find the file at " + str(input_path)
-file = input_path
+assert os.path.exists(input_path), "File not found at " + str(input_path)
+file = (input_path, 'r+')
 print("File found.\n")
 
 placard = input("Type your placard text or leave blank: ")
@@ -20,10 +22,11 @@ if placard == "":
 
 img = Image.open(input_path)
 draw = ImageDraw.Draw(img)
-W, H = img.size  # tuple of image dimensions; essential that width is before height for 'wrap'.
+W, H = img.size  # tuple of image dimensions.
 
-# create font object with the font file and specify
-# desired size
+#TODO define size_font to dynamically fit text size to image size
+
+# create font object with the font file and specify desired size
 size_font = int(H / 4)  # maintains the proportion of text relative to image size
 color = 'rgb(255, 255, 255)'  # white color
 placard_font = ImageFont.truetype('HelveticaNeue.ttc', size=size_font, index=1)  # index here indicates
@@ -33,6 +36,8 @@ placard_spacing = (H - (size_font * 3)) / 3
 # fit lines to image
 
 text = []
+
+# if placard_font.getsize(placard)[0] > W:
 
 if placard_font.getsize(placard)[0] < W:
     text.append(placard)
@@ -63,14 +68,7 @@ for line in text:
     y = y + line_height  # + placard_spacing
 
     # save the edited image
-if input_path.find('.jpg'):
-    output_path = input_path.replace('.jpg', '_PLACARD.JPG')
-elif input_path.find('.JPG'):
-    output_path = input_path.replace('.JPG', '_PLACARD.JPG')
-elif input_path.find('.JPEG'):
-    output_path = input_path.replace('.JPEG', '_PLACARD.JPG')
-elif input_path.find('.jpeg'):
-    output_path = input_path.replace('.jpeg', '_PLACARD.JPG')
+output_path = input_path.replace('.', '_' + placard + '.')  # add text to filename
 
 img.save(output_path)
-# open(output_path)
+webbrowser.open('file://' + output_path)  # https://stackoverflow.com/questions/22004498/webbrowser-open-in-python

@@ -1,6 +1,6 @@
 import random
 import sys
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 
 assert len(sys.argv) == 3, "Please specify an input path and output path"
 
