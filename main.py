@@ -1,3 +1,6 @@
+# MINIMALIST PROTEST PLACARD GENERATOR
+# This code can help you get a clear message across when your voice matters most.
+
 import random
 import os
 import webbrowser
