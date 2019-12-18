@@ -1,7 +1,7 @@
-# WIP WIP WIP
+# WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP WIP
 # MINIMALIST PROTEST PLACARD GENERATOR (batch)
 # This code can help you get a series of clear messages across for when your voice matters most.
-
+import csv
 import random
 import os
 import webbrowser
@@ -9,6 +9,20 @@ from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 
 # Run from terminal using python3, not python
 
+input_path = input("Please specify the file path of your image list: ")
+# https://stackoverflow.com/questions/22939211/what-is-the-proper-way-to-take-a-directory-path-as-user-input
+
+assert os.path.exists(input_path), "File not found at " + str(input_path)
+print("File found.\n")
+
+# choose grayscale
+gray = input("1. Convert image to grayscale? Y/N or leave blank: ")
+
+# choose contrast level
+contrast = input("2. Set numerical contrast factor (>1.0 is increased contrast) or leave blank: ")
+
+# choose text color
+color = input("3. Choose text color, W/K, or leave blank for default (W): ")
 
 def placard():
     # message = input("1. Type your placard text (3 WORDS MAX) or leave blank for generator: ")
@@ -24,68 +38,57 @@ def placard():
     return message.split()  # split words into separate lines for readability
 
 
-input_path = input("Please specify the file path of your image list: ")
-# https://stackoverflow.com/questions/22939211/what-is-the-proper-way-to-take-a-directory-path-as-user-input
-
-assert os.path.exists(input_path), "File not found at " + str(input_path)
-file = (input_path, 'r+')
-print("File found.\n")
-
-
-# choose grayscale
-gray = input("1. Convert image to grayscale? Y/N or leave blank: ")
-
-if gray.upper() == 'Y':
-    img = Image.open(input_path).convert('L')  # convert to grayscale. Use 'L', not 'LA', for jpg files.
-    # https://stackoverflow.com/questions/12201577/how-can-i-convert-an-rgb-image-into-grayscale-in-python
-
-else:
-    img = Image.open(input_path)
-
-# choose contrast level
-contrast = input("3. Set numerical contrast factor (>1.0 is increased contrast) or leave blank: ")
-if contrast == "":
-    contrast = 1.0  # does not change contrast (DEFAULT)
+def gray():
+    if gray.upper() == 'Y':
+        img = Image.open(input_path).convert('L')  # convert to grayscale. Use 'L', not 'LA', for jpg files.
+        # https://stackoverflow.com/questions/12201577/how-can-i-convert-an-rgb-image-into-grayscale-in-python
+    else:
+        img = Image.open(input_path)
 
 
-img = ImageEnhance.Contrast(img).enhance(float(contrast))  # anything above 1.0 is added contrast.
+def contrast():
+    if contrast == "":
+        contrast = 1.0  # does not change contrast (DEFAULT)
+        img = ImageEnhance.Contrast(img).enhance(float(contrast))  # anything above 1.0 is added contrast.
 
-draw = ImageDraw.Draw(img)
-W, H = img.size  # tuple of image dimensions.
+def text_color()
+    if color.upper() == "K":  # https://www.geeksforgeeks.org/isupper-islower-lower-upper-python-applications/
+        color = 'rgb(0,0,0)'  # black
 
-# choose text color
-color = input("4. Choose text color, W/K, or leave blank for default (W): ")
+    else:
+        color = 'rgb(255, 255, 255)'  # white  (DEFAULT)
 
-if color.upper() == "K":  # https://www.geeksforgeeks.org/isupper-islower-lower-upper-python-applications/
-    color = 'rgb(0,0,0)'  # black
+def sizes():
+    draw = ImageDraw.Draw(img)
+    W, H = img.size  # tuple of image dimensions.
 
-else:
-    color = 'rgb(255, 255, 255)'  # white  (DEFAULT)
+    # portion of image width to contain total text width (90% of each dim)
+    text_block = Image.new('RGB', (int(W*0.9), int(H*0.9)))
+
+    # initialize default size relative to image size
+    if W >= H:
+        size_font = int(H / 4)
+    else:
+        size_font = int(W / 4)
+
+    # create font object with desired font file
+    placard_font = ImageFont.truetype('HelveticaNeue.ttc', size=size_font, index=1)
+    # index here indicates the style within the TrueType collection file sequence.
+
+    # give total line height; h & g reach extents
+    line_height = placard_font.getsize('hg')[1]
+
+    # initialize starting y position at center
+    y = (H - (line_height * len(placard))) / 2
 
 
-# portion of image width to contain total text width (90% of each dim)
-text_block = Image.new('RGB', (int(W*0.9), int(H*0.9)))
+with open(input_path) as file:
+    readcsv = csv.reader(file, delimiter='\n')
 
-# initialize default size relative to image size
-if W >= H:
-    size_font = int(H / 4)
-else:
-    size_font = int(W / 4)
-
-# create font object with desired font file
-placard_font = ImageFont.truetype('HelveticaNeue.ttc', size=size_font, index=1)
-# index here indicates the style within the TrueType collection file sequence.
-
-# give total line height; h & g reach extents
-line_height = placard_font.getsize('hg')[1]
-
-
-
-placard = placard()
+    for line in readcsv:
+        placard = placard()
 # print(placard) # for troubleshooting
 
-# initialize starting y position at center
-y = (H - (line_height * len(placard))) / 2
 
 for line in placard:
     # If word is too long
