@@ -7,13 +7,13 @@ import os
 import webbrowser
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 
-# Run from terminal using python3, not simply python
+# Run from terminal using python3, not python
 
 
 def placard():
     # message = input("1. Type your placard text (3 WORDS MAX) or leave blank for generator: ")
     message_generator = ["RESIST", "HAVE EMPATHY", "QUESTION", "VOTE", "REDISTRIBUTE WEALTH", "GIVE MORE", "WASTE LESS",
-                        "MIGHT ≠ RIGHT", "CONSUME LESS", "READ"]
+                        "MIGHT ≠ RIGHT", "CONSUME LESS", "READ", "CHANGE IS POSSIBLE"]
     # if message == "":
     message = random.choice(message_generator)
     # elif len(message.split()) > 3:

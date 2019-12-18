@@ -6,7 +6,7 @@ import os
 import webbrowser
 from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 
-# Run from terminal using python3, not simply python
+# Run from terminal using python3, not python
 
 input_path = input("Please specify the file path of your image: ")
 # https://stackoverflow.com/questions/22939211/what-is-the-proper-way-to-take-a-directory-path-as-user-input
@@ -19,7 +19,7 @@ print("File found.\n")
 def placard():
     message = input("1. Type your placard text (3 WORDS MAX) or leave blank for generator: ")
     message_standard = ["RESIST", "HAVE EMPATHY", "QUESTION", "VOTE", "REDISTRIBUTE WEALTH", "GIVE MORE", "WASTE LESS",
-                        "MIGHT ≠ RIGHT", "CONSUME LESS", "READ"]
+                        "MIGHT ≠ RIGHT", "CONSUME LESS", "READ", "CHANGE IS POSSIBLE"]
     if message == "":
         message = random.choice(message_standard)
     elif len(message.split()) > 3:
@@ -34,7 +34,7 @@ placard = placard()
 # print(placard) # for troubleshooting
 
 # choose grayscale
-gray = input("2. Convert image to grayscale? Y/N or leave blank: ")
+gray = input("2. Convert image to grayscale? Y/N or leave blank for default: ")
 
 if gray.upper() == 'Y':
     img = Image.open(input_path).convert('L')  # convert to grayscale. Use 'L', not 'LA', for jpg files.
@@ -43,7 +43,7 @@ else:
     img = Image.open(input_path)
 
 # choose contrast level
-contrast = input("3. Set numerical contrast factor (>1.0 is increased contrast) or leave blank: ")
+contrast = input("3. Set numerical contrast factor (>1.0 is increased contrast) or leave blank for default: ")
 if contrast == "":
     contrast = 1.0  # does not change contrast (DEFAULT)
 
