@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 
 # Run from terminal using python3, not python
 
-input_path = input("Please specify the file path of your image: ")
+input_path = input("Please specify the *accessible* file path of your image: ")
 # https://stackoverflow.com/questions/22939211/what-is-the-proper-way-to-take-a-directory-path-as-user-input
 
 assert os.path.exists(input_path), "File not found at " + str(input_path)
